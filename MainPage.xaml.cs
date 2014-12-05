@@ -27,8 +27,12 @@ namespace chatbot
         string urname;
         int flag;
         string reply;
+        string[] starterssent={ "hey there", "hello lucibot", "hi lucibot","hey lucibot" };
+        string[] complements={ "same here", "thank you" };
+        string[] starterswords = { "hey", "hii", "hi", "hello" };
         bool istyping = false;
         int askedname = 0;
+        Random rnd = new Random();
         private DispatcherTimer timer;
         private int i, j;
       
@@ -45,7 +49,7 @@ namespace chatbot
         }
         void timer_Tick(object sender, object e)
         {
-
+            input.Text = "";
             input.IsReadOnly = true;
             
                 if (i < reply.Length)
@@ -73,13 +77,13 @@ namespace chatbot
                 if (e.Key.Equals(VirtualKey.Enter))
                 {
                     output.Text = "";
+                   
                     if (input.Text == "")
                     {
                         if (flag == 0)
                         {
                             reply = "Oh God ! Why am i always an ICEBREAKER !!";
                             timer.Start();
-                            Random rnd = new Random();
                             flag = rnd.Next(0, 3);
                         }
                         else if (flag == 1)
@@ -105,68 +109,103 @@ namespace chatbot
                     }
                     else
                         specialengine();
-                        
-                   
                 }
             }
         }
 
         private void specialengine()
         {
-            string[] starterssent = { "hey there", "hello lucibot", "hi lucibot" };
-            for (int i = 0; i < starterssent.Length; i++)
-            {
-                if (input.Text == starterssent[i] && askedname == 0)
+            int gothere = 0;
+              for (int i = 0; i < starterssent.Length; i++)
+                if (input.Text == starterssent[i])
                 {
-                        reply = "What is Your Name ?";
-                        askedname = 1;
-                        getname();
-                        timer.Start();
-                        break;
+                    startings();
+                    gothere=1;
                 }
-                if (input.Text == starterssent[i] && askedname == 3)
-                    {
-                        reply = "I think we are already done with 'Hello and hii'...";
-                        timer.Start();
-                    }
-                else
+             for (int i = 0; i < complements.Length; i++)
+                if (input.Text == complements[i])
                 {
-                    matrixengine();
-                    break;
+                    gothere=1;
+                complementing();
                 }
-            }
+             if (gothere == 0)
+                 matrixengine();
         }
 
+        private void matrixengine()
+        {
+            for (int i = 0; i < starterswords.Length; i++)
+                if (input.Text == starterswords[i])
+                    startings();
+
+        }
+        private void startings()
+        {
+            if (askedname == 0)
+            {
+                reply = "What is Your Name ?";
+                askedname = 1;
+                getname();
+                timer.Start();
+            }
+            if (askedname == 3)
+            {
+                int ch = rnd.Next(0,3);
+                switch(ch)
+                { 
+                    case 0:
+                reply = "I think we are already done with 'Hello and hii'...";
+                timer.Start();
+                break;
+                    case 1:
+                reply = "Heyyyyaaaa";
+                timer.Start();
+                break;
+                    case 2:
+                reply = "hii there";
+                timer.Start();
+                break;
+                 }
+            }
+           
+    }
+    
      
+          private void complementing()
+        {
+            int ch = rnd.Next(0,3);
+              switch(ch)
+              { 
+                  case 0:
+                   reply = "Oh!!Mention not";
+                   timer.Start();
+                   break;
+                  case 1:
+                   reply = "Pleasure is all mine";
+                   timer.Start();
+                   break;
+                  case 2:
+                   reply = "Cool...";
+                   timer.Start();
+                   break;
+
+          }
+        }   
+     
+     
+      
+       
+       
+
         private void getname()
         {
-          
+
             input.IsReadOnly = true;
             namein.Visibility = Windows.UI.Xaml.Visibility.Visible;
             nameout.Visibility = Windows.UI.Xaml.Visibility.Visible;
             nameok.Visibility = Windows.UI.Xaml.Visibility.Visible;
-        }
-       
-        private void matrixengine()
-        {
-            string[] starterswords = { "hey","hii","hi","hello" };
-            for (int i = 0; i < starterswords.Length; i++)
-            {
-                if (input.Text == starterswords[i] && askedname == 0)
-                {
-                    reply = "What is Your Name ?";
-                    askedname = 1;
-                    getname();
-                    timer.Start();
-                    break;
-                }
-                if (input.Text == starterswords[i] && askedname == 3)
-                {
-                    reply = "heyyaaaa";
-                    timer.Start();
-                    break;
-                }
-            }
+            namein.IsTabStop = true;
+            this.namein.Focus(FocusState.Keyboard);
         }
         private void output_SelectionChanged(object sender, RoutedEventArgs e)
         {
@@ -182,7 +221,7 @@ namespace chatbot
             nameok.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             output.Text = "";
             reply = "Hello "+urname+" Nice to meet you...";
-            input.Text = "";
+            input.Text = "";    
             timer.Start();
         }
 

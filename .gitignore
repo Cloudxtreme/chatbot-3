@@ -41,3 +41,25 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+*.xaml
+*.cs
+*.png
+*.xbf
+*.xml
+*.exe
+*.pri
+bin/Debug/AppX/vs.appxrecipe
+*.pckgdep
+*.appxrecipe
+*.pdb
+*.csproj
+*.intermediate
+*.resfiles
+*.appxmanifest
+*.cache
+*.txt
+*.backup
+*.pfx
+*.suo
+*.sln
