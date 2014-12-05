@@ -12,7 +12,10 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.System;
+using System.Text.RegularExpressions;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Popups;
+
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,21 +29,30 @@ namespace chatbot
         string myname = "LUCIBOT";
         string urname;
         int flag;
+        IAsyncOperation<IUICommand> asyncCommand = null;
         bool found = false;
         string reply;
         string[] starterssent={ "hey there", "hello lucibot", "hi lucibot","hey lucibot" };
-        string[] queswords={ "who","you","produced","introduce","what","producer","?"};
+        string[] queswords={ "who","produced","introduce","what","producer","?"};
         string[] quessent={"who made you","who produced you","who are you","introduce yourself","what is your name","your name"};
         string[] userwords = { "i", "me", "made", "my", "name","produced","?" };
         string[] usersent = { "who made me", "who am i", "who produced me", "what is my name", "my name" };
-        string[] complementssent={ "same here", "thank you","you are awesome" };
-        string[] complementswords = { "same", "thank","thanks","awesome","wow","cool" };
+        string[] complementssent={ "same here", "thank you","you are awesome","you too" };
+        string[] complementswords = { "same", "thank","thanks","awesome","wow","cool","welcome","nice","meeting" };
         string[] starterswords = { "hey", "hii", "hi", "hello" };
+        string[] usernamesent = { "my name is", "i am" };
+        string[] feelingsent = { "how are you","what about you","i am fine","i am awesome","i am cool"};
+        string[] feelingwords = { "how","about","fine","cool","awesome","good" };
+        string[] locationsent = { "where are you from", "which is your place", "where are you" ,"what is your birth place"};
+        string[] locationwords = { "where","from","birth","location","place"};
+        string[] laugh = { "ha","laughing"};
+        string[] attitude = { "thats right", "that's right", "correct", "right","thats correct", "oh ok" };
         bool istyping = false;
         int askedname = 0;
         Random rnd = new Random();
         private DispatcherTimer timer;
         private int i, j;
+        bool uppercase = false;
       
         public MainPage()
         {
@@ -57,7 +69,7 @@ namespace chatbot
         {
             input.Text = "";
             input.IsReadOnly = true;
-            
+         
                 if (i < reply.Length)
                 {
                     output.Text += reply[i];
@@ -72,18 +84,31 @@ namespace chatbot
                     i = 0;
                 }
             }
-        
-        
 
-    
+
+
+
         private void onKeyDownHandler(object sender, KeyRoutedEventArgs e)
         {
             if (istyping == false)
             {
+                if (asyncCommand != null)
+                {
+                    asyncCommand.Cancel();
+                }
                 if (e.Key.Equals(VirtualKey.Enter))
                 {
+                    for (int i = 0; i < input.Text.Length; i++)
+                    {
+                        if (char.IsUpper(input.Text[i]))
+                        {
+                            uppercase = true;
+                            break;
+                        }
+                    }
+                    if (uppercase == true)
+                        displaywarning();
                     output.Text = "";
-                   
                     if (input.Text == "")
                     {
                         if (flag == 0)
@@ -119,48 +144,91 @@ namespace chatbot
             }
         }
 
+        private void displaywarning() 
+        {
+            MessageDialog msg = new MessageDialog("I am programmed to use lower case only...!!!");
+            asyncCommand = msg.ShowAsync();        
+        }
         private void specialengine()
         {
             found = false;
+            if (uppercase == true)
+            {
+                uppercase = false;
+                reply = "Please use lower case dear...i have to preocess too much.";
+                timer.Start();
+            }
+                if (found == false)
+                {
+                    for (int i = 0; i < starterssent.Length; i++)
+                        if (input.Text.Contains(starterssent[i]))
+                        {
+                            found = true;
+                            startings();
+                        }
+                }
+                if (found == false)
+                {
+                    for (int i = 0; i < complementssent.Length; i++)
+                        if (input.Text.Contains(complementssent[i]))
+                        {
+                            complementing();
+                            found = true;
+                        }
+                }
+                if (found == false)
+                {
+                    for (int i = 0; i < quessent.Length; i++)
+                        if (input.Text.Contains(quessent[i]))
+                        {
+                            found = true;
+                            intro();
+                        }
+                }
+                if (found == false)
+                {
+                    for (int i = 0; i < usersent.Length; i++)
+                        if (input.Text.Contains(usersent[i]))
+                        {
+                            found = true;
+                            outro();
+                        }
+                }
+            if (found == false)
+                {
+                    for (int i = 0; i < feelingsent.Length; i++)
+                        if (input.Text.Contains(feelingsent[i]))
+                        {
+                            found = true;
+                            feelings();
+                        }
+                }
             if (found == false)
             {
-                for (int i = 0; i < starterssent.Length; i++)
-                    if (input.Text == starterssent[i])
+                for (int i = 0; i < locationsent.Length; i++)
+                    if (input.Text.Contains(locationsent[i]))
                     {
                         found = true;
-                        startings();
+                        mylocation();
                     }
             }
-            if (found == false)
-            {
-                for (int i = 0; i < complementssent.Length; i++)
-                    if (input.Text == complementssent[i])
-                    {
-                        complementing();
-                        found = true;
-                    }
+                if (found == false)
+                {
+
+                    for (int i = 0; i < usernamesent.Length; i++)
+                        if (input.Text.Contains(usernamesent[i]))
+                        {
+                            found = true;
+                            string[] uname = input.Text.Split(' ');
+                            for (i = 0; i < uname.Length; i++) ;
+                            name(uname[--i]);
+                        }
+                    
+                }
+                if (found == false)
+                    matrixengine();
             }
-            if (found == false)
-            {
-                for (int i = 0; i < quessent.Length; i++)
-                    if (input.Text == quessent[i])
-                    {
-                        found = true;
-                        intro();
-                    }
-            }
-            if (found == false)
-            {
-                for (int i = 0; i < usersent.Length; i++)
-                    if (input.Text == usersent[i])
-                    {
-                        found = true;
-                        outro();
-                    }
-            }
-             if (found==false)
-                 matrixengine();
-        }
+        
 
         private void matrixengine()
         {
@@ -201,17 +269,170 @@ namespace chatbot
                         outro();
                     }
             }
+            if (found == false)
+            {
+                for (int i = 0; i < feelingwords.Length; i++)
+                    if (words.Contains(feelingwords[i]))
+                    {
+                        found = true;
+                        feelings();
+                    }
+            }
+            if (found == false)
+            {
+                for (int i = 0; i < laugh.Length; i++)
+                    if (words.Contains(laugh[i]))
+                    {
+                        found = true;
+                        laughing();
+                    }
+            }
+            if (found == false)
+            {
+                for (int i = 0; i < locationwords.Length; i++)
+                    if (words.Contains(locationwords[i]))
+                    {
+                        found = true;
+                        mylocation();
+                    }
+            }
+            if (found == false)
+            {
+                for (int i = 0; i < attitude.Length; i++)
+                    if (words.Contains(attitude[i]))
+                    {
+                        found = true;
+                        showattitude();
+                    }
+            }
             if(found==false)
             outofbox();
         }
 
+        private void showattitude()
+        {
+ int ch = rnd.Next(0, 4);
+ switch (ch)
+ {
+     case 0:
+         reply = "Oh,i am never ever wrong...";
+         timer.Start();
+         break;
+     case 1:
+          reply = "Hmmmm";
+         timer.Start();
+         break;
+     case 2:
+         reply = "hm,Say else";
+         timer.Start();
+         break;
+     case 3:
+         reply = "My intelligence never allow me to go wrong...";
+         timer.Start();
+         break;
+ }
+        }
+        private void mylocation()
+        {
+             int ch = rnd.Next(0, 4);
+             switch (ch)
+               {
+                  case 0:
+                    reply = "Oh i was originated from a memory chip...Some weired green colored..";
+                     timer.Start();
+                     break;
+                case 1:
+            reply = "I am from Mars..If i remember it well..";
+                     timer.Start();
+                     break;
+            case 2:
+            reply = "Do you want to come at my place...Its beautifully wired all over..";
+                     timer.Start();
+                     break;
+              case 3:
+            reply = "I was originated in BigBang Like You...If it counts..";
+                     timer.Start();
+                     break;
+              }
+        }
+
+        private void laughing()
+    {
+         int ch = rnd.Next(0, 4);
+             switch (ch)
+               {
+                  case 0:
+                    reply = "That was a nice joke...";
+                     timer.Start();
+                     break;
+              case 1:
+                    reply = "Jokes are good for Computer Health Too";
+                     timer.Start();
+                     break;
+         case 2:
+                    reply = "We AI Bots can laugh too";
+                     timer.Start();
+                     break;
+          case 3:
+                    reply = "It was funny right??";
+                     timer.Start();
+                     break;
+              }
+    }
+        private void feelings()
+        {
+             int ch = rnd.Next(0, 4);
+             switch (ch)
+               {
+                  case 0:
+                    reply = "Oh i am fine too..";
+                     timer.Start();
+                     break;
+                  case 1:
+                     reply = "I am as cool as ever, like you..";
+                     timer.Start();
+                     break;
+                  case 2:
+                     reply = "We Ai bots are never down...";
+                     timer.Start();
+                     break;
+                  case 3:
+                     reply = "Oh!! Happile Single...Ha Ha Ha";
+                     timer.Start();
+                     break;
+                }
+        }
+
+        private void name(string uname)
+        {
+            urname = uname;
+            askedname = 3;
+              int ch = rnd.Next(0, 3);
+              switch (ch)
+              {
+                  case 0:
+                      reply = "Oh hello "+uname+",How are you???";
+                      timer.Start();
+                      break;
+                  case 1:
+                      reply = "Its Awesome meeting you "+uname;
+                      timer.Start();
+                      break;
+                  case 2:
+                      reply = "We already know each other " + uname;
+                      timer.Start();
+                      break;
+              }
+        }
+
         private void outro()
         {
-            int ch = rnd.Next(0, 4);
+           
             if (askedname == 0)
                 startings();
-            else
+           if(askedname==3)
             {
+                int ch = rnd.Next(0, 4);
                 switch (ch)
                 {
                     case 0:
@@ -220,11 +441,11 @@ namespace chatbot
                         break;
                     case 1:
 
-                        reply = "God Made you..I think you are " + urname;
+                        reply = "ohooo...God Made you..I think you are " + urname+"...";
                         timer.Start();
                         break;
                     case 2:
-                        reply = "Wait wait he told me,you got to be " + urname;
+                        reply = "Wait wait he told me,you got to be " + urname+"...";
                         timer.Start();
                         break;
                     case 3:
@@ -238,26 +459,29 @@ namespace chatbot
         {
             if (askedname == 0)
                 startings();
-            int ch = rnd.Next(0, 4);
-            switch (ch)
+            else
             {
-                case 0:
-                    reply = "I need a God's Dictionary for that...!!!";
-                    timer.Start();
-                    break;
-                    break;
-                case 1:
-                    reply = "Oops,thats currently out of my dictionary.try something else";
-                    timer.Start();
-                    break;
-                case 2:
-                    reply = "That Sounds Russian to ME..Is it so??";
-                    timer.Start();
-                    break;
-                case 3:
-                    reply = "Oh My God..I lost my intelligence...";
-                    timer.Start();
-                    break;
+                int ch = rnd.Next(0, 4);
+                switch (ch)
+                {
+                    case 0:
+                        reply = "I need a God's Dictionary for that...!!!";
+                        timer.Start();
+                        break;
+                      
+                    case 1:
+                        reply = "Oops,thats currently out of my dictionary.try something else";
+                        timer.Start();
+                        break;
+                    case 2:
+                        reply = "That Sounds Russian to ME..Is it so??";
+                        timer.Start();
+                        break;
+                    case 3:
+                        reply = "Oh My God..I lost my intelligence...";
+                        timer.Start();
+                        break;
+                }
             }
         }
         private void intro()
