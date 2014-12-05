@@ -35,7 +35,7 @@ namespace chatbot
         string[] starterssent={ "hey there", "hello lucibot", "hi lucibot","hey lucibot" };
         string[] queswords={ "who","produced","introduce","what","producer","?"};
         string[] quessent={"who made you","who produced you","who are you","introduce yourself","what is your name","your name"};
-        string[] userwords = { "i", "me", "made", "my", "name","produced","?" };
+        string[] userwords = {"me", "made", "my", "name","produced","?" };
         string[] usersent = { "who made me", "who am i", "who produced me", "what is my name", "my name" };
         string[] complementssent={ "same here", "thank you","you are awesome","you too" };
         string[] complementswords = { "same", "thank","thanks","awesome","wow","cool","welcome","nice","meeting" };
@@ -47,6 +47,9 @@ namespace chatbot
         string[] locationwords = { "where","from","birth","location","place"};
         string[] laugh = { "ha","laughing"};
         string[] attitude = { "thats right", "that's right", "correct", "right","thats correct", "oh ok" };
+        string[] negative = {"no","i dont know","dont"};
+        string[] confirmations={"yes","ok","oh ok","yup","ok ok"};
+    
         bool istyping = false;
         int askedname = 0;
         Random rnd = new Random();
@@ -212,6 +215,24 @@ namespace chatbot
                         mylocation();
                     }
             }
+            if (found == false)
+            {
+                for (int i = 0; i < negative.Length; i++)
+                    if (input.Text.Contains(negative[i]))
+                    {
+                        found = true;
+                        negativereply();
+                    }
+            }
+             if (found == false)
+            {
+                for (int i = 0; i < confirmations.Length; i++)
+                    if (input.Text.Contains(confirmations[i]))
+                    {
+                        found = true;
+                        confirm();
+                    }
+            }
                 if (found == false)
                 {
 
@@ -305,10 +326,77 @@ namespace chatbot
                         showattitude();
                     }
             }
+            if (found == false)
+            {
+                for (int i = 0; i < negative.Length; i++)
+                    if (words.Contains(negative[i]))
+                    {
+                        found = true;
+                        negativereply();
+                    }
+            }
+             if (found == false)
+            {
+                for (int i = 0; i < confirmations.Length; i++)
+                    if (words.Contains(confirmations[i]))
+                    {
+                        found = true;
+                        confirm();
+                    }
+            }
             if(found==false)
             outofbox();
         }
 
+        private void confirm()
+        {
+             int ch = rnd.Next(0, 4);
+            switch (ch)
+            {
+                case 0:
+                    reply = "hmm..i thought that i was right only...";
+                    timer.Start();
+                    break;
+                     case 1:
+                    reply = "see...My AI is never wrong..";
+                    timer.Start();
+                    break;
+                     case 2:
+                    reply = "hmm..may be i need to learn more words from you...";
+                    timer.Start();
+                    break;
+                    case 3:
+                    reply = "Yeah..Everybody loves me...";
+                    timer.Start();
+                    break;
+            }
+
+        }
+
+        private void negativereply()
+        {
+            int ch = rnd.Next(0, 4);
+            switch (ch)
+            {
+                case 0:
+                    reply = "Oh well, ok...";
+                    timer.Start();
+                    break;
+                case 1:
+                    reply = "hmm..that's fine...";
+                    timer.Start();
+                    break;
+                case 2:
+                    reply = "i think i know it...umm,may be.";
+                    timer.Start();
+                    break;
+                case 3:
+                    reply = "Don't be negative...";
+                    timer.Start();
+                    break;
+
+            }
+        }
         private void showattitude()
         {
  int ch = rnd.Next(0, 4);
